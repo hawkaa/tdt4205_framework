@@ -137,6 +137,27 @@ void node_print_entries ( FILE *output, node_t *root, int nesting )
         fprintf ( output, "%*c%p\n", nesting, ' ', root );
 }
 
+node_t*
+node_init_c(nodetype_t type, char* label, base_data_type_t base_type, 
+		expression_type_t expression_type,int n_children, node_t **children)
+{
+	node_t* n = (node_t*)malloc(sizeof(node_t));
+	n->nodetype = type;
+	n->label = label;
+	n->expression_type = expression_type;
+
+	n->data_type.base_type = base_type;
+	
+	n->n_children = n_children;
+	//n->children = malloc(sizeof(node_t)*n_children);
+	n->children = malloc(sizeof(node_t*)*n_children);
+	int i;
+	for(i=0;i<n_children;++i) {
+		n->children[i] = children[i];
+	}
+	return n;
+
+}
 
 node_t * node_init ( nodetype_t type,
 		char* label,

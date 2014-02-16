@@ -84,7 +84,8 @@ main ( int argc, char **argv )
     /* Assign nodes functions according to their type; Handout first time only? */
     assignFunctionsToNodes( root );
     /* Simplify the abstract syntax tree */
-    root->simplify( root, 0 );
+    root = root->simplify(root, 0);
+    //root = NULL;
     
     if ( outputStage == 4 ) { 
         exit(0); // Exit if we are only printing this stages debug information. "Build Simple Tree files"

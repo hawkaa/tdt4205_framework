@@ -66,6 +66,13 @@ node_t * node_init ( nodetype_t type,
 		expression_type_t expression_type,
 		int n_children,
 		va_list child_list );
+
+node_t * node_init_c ( nodetype_t type,
+		char* label,
+		base_data_type_t base_type,
+		expression_type_t expression_type,
+		int n_children,
+		node_t **children);
 void node_print ( FILE *output, node_t *root, int nesting );
 void node_print_entries ( FILE *output, node_t *root, int nesting );
 void node_finalize ( node_t *discard );
