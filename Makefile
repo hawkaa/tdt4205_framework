@@ -71,6 +71,7 @@ work/parser.h: work/parser.c
 clean:
 	if [ -e work ]; then rm -r work; fi
 	if [ -e obj ]; then rm -r obj; fi
+	if [ -e testOutput ]; then rm -r testOutput; fi
 purge: clean
 	if [ -e bin ]; then rm -r bin; fi
 
