@@ -19,7 +19,7 @@ Node_t *simplify_types ( Node_t *root, int depth )
 {	
 	int i;
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_types\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 	/* children first */
 
 	/* check for children */
@@ -59,9 +59,11 @@ Node_t *simplify_function ( Node_t *root, int depth )
 	int i;
 
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_function\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 	
 	
+
+	Node_t *simplified_first = root->children[0]->simplify(root->children[0], depth + 1);
 
 	/* new function pointer*/
 	Node_t *func; 
@@ -78,7 +80,6 @@ Node_t *simplify_function ( Node_t *root, int depth )
 	/* statement list */
 	children[1] = root->children[3]->simplify(root->children[3], depth + 1);
 
-	Node_t *simplified_first = root->children[0]->simplify(root->children[0], depth + 1);
 	/* allocating node */
 	func = node_init_c(function_n, root->children[1]->label, 
 			simplified_first->data_type.base_type,
@@ -152,7 +153,7 @@ Node_t *simplify_declaration_statement ( Node_t *root, int depth )
 	int i;
 
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_declaration_statement\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 	/* children first */
 	for(i = 0; i < root->n_children; ++i) {
 		if(root->children[i] != NULL)
@@ -187,7 +188,7 @@ Node_t *simplify_single_child ( Node_t *root, int depth )
 	int i;
 
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_single_child\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 	/* children first */
 
 	//return root;
@@ -201,7 +202,7 @@ Node_t *simplify_list_with_null ( Node_t *root, int depth )
 {
 	int i;
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_list_with_null\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 
 	
 
@@ -267,7 +268,7 @@ Node_t *simplify_list ( Node_t *root, int depth )
 	
 	int i;
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s simplify_list\n", depth, ' ', root->nodetype.text );
+		fprintf ( stderr, "%*cSimplify %s \n", depth, ' ', root->nodetype.text );
 
 	/* simplify all of the children first */
 	for(i = 0; i < root->n_children; ++i) {
@@ -322,7 +323,7 @@ Node_t *simplify_expression ( Node_t *root, int depth )
 {
 	int i;
 	if(outputStage == 4)
-		fprintf ( stderr, "%*cSimplify %s (%s) simplify_expression\n", depth, ' ', root->nodetype.text, 
+		fprintf ( stderr, "%*cSimplify %s (%s) \n", depth, ' ', root->nodetype.text, 
 		root->expression_type.text );
 	
 	//fprintf(stderr, "%i\n", root->n_children);
