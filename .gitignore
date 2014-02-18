@@ -6,3 +6,5 @@ test_file_stage.d/
 
 # vim
 *.swp
+
+*.o
