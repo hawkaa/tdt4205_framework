@@ -159,43 +159,63 @@ node_init_c(nodetype_t type, char* label, base_data_type_t base_type,
 
 }
 
-node_t * node_init ( nodetype_t type,
-		char* label,
-		base_data_type_t base_type,
-		expression_type_t expression_type,
-		int n_children,
-		va_list child_list )
+node_t *
+node_init(
+	nodetype_t type,
+	char* label,
+	base_data_type_t base_type,
+	expression_type_t expression_type,
+	int n_children,
+	va_list child_list
+	)
 {
+
+	int i;
+
+	/* allocating room for the node_t itself */
 	node_t* n = (node_t*)malloc(sizeof(node_t));
+	
+	/* setting data */
 	n->nodetype = type;
 	n->label = label;
 	n->expression_type = expression_type;
-
 	n->data_type.base_type = base_type;
 	
+	/* children */
 	n->n_children = n_children;
-	//n->children = malloc(sizeof(node_t)*n_children);
+	
+	/* only allocating room for all the pointers */
 	n->children = malloc(sizeof(node_t*)*n_children);
-	int i;
-	for(i=0;i<n_children;++i) {
+	for(i = 0; i < n_children; ++i)
 		n->children[i] = va_arg(child_list, node_t*);
-	}
+
 	return n;
 }
 
-
-void node_finalize ( node_t *discard )
+/*
+ * Clears a node.
+ * Will loose pointers to children.
+ */
+void
+node_finalize(node_t *discard)
 {
+	free(discard->children);
+	free(discard->label);
 	free(discard);
 }
 
 
-void destroy_subtree ( FILE *output, node_t *discard )
+void
+destroy_subtree(FILE *output, node_t *discard)
 {
-	if (discard == NULL) return;
 	int i;
-	for(i=0;i>discard->n_children;++i) {
+
+	if (discard == NULL)
+		return;
+	
+	for(i = 0; i < discard->n_children; ++i) {
 		destroy_subtree(output, discard->children[i]);
 	}
+
 	node_finalize(discard);
 }

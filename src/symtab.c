@@ -1,5 +1,8 @@
-#include "symtab.h"
+/* global include */
 #include <stdlib.h>
+
+/* local include */
+#include "symtab.h"
 
 /* These variables is located in vslc.c */
 extern int arch;
@@ -9,8 +12,6 @@ extern int outputStage;
 static char **strings;
 static int strings_size = 1, strings_index = -1;
 
-/* maximum length of string in array */
-static const int STRING_MAX_SIZE = 40;
 
 /*
  * Initializes the symbol table
@@ -36,10 +37,15 @@ symtab_finalize(void)
 
 /*
  * Adds a string to the symbol table
+ * Will take no copy of the string, will only point to the same string
+ * constast.
  */
 int
 strings_add(char *str)
 {
+
+	//char *str_copy;
+
 	++strings_index;
 
 	/* print debug info for stage 7 */
@@ -51,10 +57,15 @@ strings_add(char *str)
 		strings_size *= 2;
 		strings = realloc(strings, sizeof(char*) * strings_size);
 	}
-		
+	
+	/* copy the string */
+	//str_copy = STRDUP(str);
+	strings[strings_index] = str;
+
 	/* pointers now allocated, lets copy to an new memory location */
-	strings[strings_index] = malloc(sizeof(char) * STRING_MAX_SIZE);
-	strcpy(strings[strings_index], str);
+	/*strings[strings_index] = malloc(sizeof(char) * STRING_MAX_SIZE);
+	strcpy(strings[strings_index], str);*/
+
 
 	return strings_index;
     

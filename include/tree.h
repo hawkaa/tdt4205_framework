@@ -1,9 +1,12 @@
 #ifndef TREE_H
 #define TREE_H
 
+/* global includes */
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdlib.h>
+
+/* local includes */
 #include "symtab.h"
 #include "nodetypes.h"
 
@@ -23,37 +26,59 @@
  * Basic data structure for syntax tree nodes.
  */
 typedef struct node_t {
-    nodetype_t nodetype;        			// Type of this node
-    char *label;           					// Data label for variables
-    expression_type_t expression_type;		// If this node is an expression, the kind of expression
-    data_type_t data_type;					// The data type, only used for declarations,
-    										// the data type for variables is in the symbol table entry.
-    int string_index;						// Index of string in string table
+	
+	/* type of this node*/
+	nodetype_t nodetype;
 
-    symbol_t *entry;        				// Pointer to symbol table entry
-    class_symbol_t* class_entry;			// Pointer to class symbol table entry
-    function_symbol_t* function_entry;		// Pointer to function symbol table entry
+	/* data label for variables */
+	char *label;
 
+	/* if the node is an expression, the kind of expression */
+	expression_type_t expression_type;
 
-    int n_children;    		// Number of children
-    struct node_t **children;    	// Array of pointers to child nodes
-    
-    struct node_t *(*simplify)( struct node_t*, int );			// This nodes simplify function
-    int (*bind_names)( struct node_t*, int );	// This nodes bind_names function
-    data_type_t (*typecheck)( struct node_t*);						// This nodes typecheck function
-    void (*generate)( struct node_t*, int);						// This nodes generate function
-    
+	/* the data type, only used for declarations */
+	data_type_t data_type;
 
+	/* data type for variables in the symbol table entry */
+	int string_index;
 
-    // The value of constant nodes
-    union {
-    	double double_const;
-    	int int_const;
-    	float float_const;
-    	char char_const;
-    	char* string_const;
-    	bool bool_const;
-    };
+	/* pointer to symbol table entry */
+	symbol_t *entry;
+	
+	/* pointer to class symbol table entry */
+	class_symbol_t* class_entry;
+	
+	/* pointer to function symbol table entry */
+	function_symbol_t* function_entry;
+	
+	/* number of children */
+	int n_children;
+	
+	/* child pointer variables */
+	struct node_t **children;
+	
+	/* simplify function */
+	struct node_t *(*simplify)( struct node_t*, int );
+	
+	/* bind names function */
+	int (*bind_names)( struct node_t*, int );
+	
+	/* typecheck function */
+	data_type_t (*typecheck)( struct node_t*);
+
+	/* generate function */
+	void (*generate)( struct node_t*, int);
+	
+	/* constant node values */
+	union {
+		double double_const;
+		int int_const;
+		float float_const;
+		char char_const;
+		char* string_const;
+		bool bool_const;
+	};
+
 } node_t;
 
 

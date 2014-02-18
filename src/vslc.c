@@ -84,7 +84,7 @@ main ( int argc, char **argv )
     /* Assign nodes functions according to their type; Handout first time only? */
     assignFunctionsToNodes( root );
     /* Simplify the abstract syntax tree */
-    root = root->simplify(root, 0);
+    root->simplify(root, 0);
     //root = NULL;
     
     if ( outputStage == 4 ) { 
