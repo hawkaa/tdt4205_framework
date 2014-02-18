@@ -44,8 +44,6 @@ int
 strings_add(char *str)
 {
 
-	//char *str_copy;
-
 	++strings_index;
 
 	/* print debug info for stage 7 */
@@ -59,13 +57,7 @@ strings_add(char *str)
 	}
 	
 	/* copy the string */
-	//str_copy = STRDUP(str);
 	strings[strings_index] = str;
-
-	/* pointers now allocated, lets copy to an new memory location */
-	/*strings[strings_index] = malloc(sizeof(char) * STRING_MAX_SIZE);
-	strcpy(strings[strings_index], str);*/
-
 
 	return strings_index;
     

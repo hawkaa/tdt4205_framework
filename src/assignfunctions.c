@@ -74,9 +74,9 @@ void assignFunctionsToNodes ( node_t *root )
 			root->simplify = simplify_expression;
 			break;
 
-        case CLASS:
-            root->simplify = simplify_class;
-            break;
+        	case CLASS:
+			root->simplify = simplify_class;
+			break;
 		
 		default:
 			root->simplify = simplify_default;
