@@ -3,6 +3,7 @@
 
 /* local include */
 #include "symtab.h"
+#include "tree.h"
 
 /* These variables is located in vslc.c */
 extern int arch;
@@ -57,7 +58,7 @@ strings_add(char *str)
 	}
 	
 	/* copy the string */
-	strings[strings_index] = str;
+	strings[strings_index] = STRDUP(str);
 
 	return strings_index;
     

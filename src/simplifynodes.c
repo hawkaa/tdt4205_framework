@@ -333,6 +333,7 @@ simplify_expression(Node_t *root, int depth)
 		switch(root->expression_type.index) {
 		case UMINUS_E:
 		case NEW_E:
+		case NOT_E:
 			/* simplify one and only child and keep it */
 			root->children[0] = root->children[0]->simplify(root->children[0], depth + 1);
 			return root;
