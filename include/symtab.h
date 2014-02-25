@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "ght_hash_table.h"
 
 typedef enum  {NO_TYPE=0, INT_TYPE, FLOAT_TYPE, BOOL_TYPE, STRING_TYPE, VOID_TYPE, CLASS_TYPE, DOUBLE_TYPE, ARRAY_TYPE}
 base_data_type_t;
@@ -18,7 +19,7 @@ typedef struct data_type{
 } data_type_t;
 
 #define HASH_BUCKETS 8
-typedef int hash_t;
+typedef ght_hash_table_t hash_t;
 
 typedef struct {
     int stack_offset, depth;
