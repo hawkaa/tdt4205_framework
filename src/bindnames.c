@@ -1,46 +1,105 @@
-/* global include */
-#include <stdlib.h>
-
-/* local include */
 #include "bindnames.h"
-
-/* output stage, located in vslc.c */
-extern int outputStage;
-
+extern int outputStage; // This variable is located in vslc.c
 char* thisClass;
 
-/*
- * Default symtab binding function.
- * Will recursively call the corresponding binding function on its children,
- * not adding anything itself
- */
-int
-bind_default(node_t *root, int stackOffset)
+int b_d(node_t* root, int stack_offset);
+int b_c(node_t* root, int stack_offset);
+
+int bind_default ( node_t *root, int stackOffset)
 {
-	int i;
-	for(i = 0; i < root->n_children; ++i)
-		if(root->children[i] != NULL)
-			root->children[i]->bind_names(root->children[i], stackOffset + 1);
+	return b_d(root,stackOffset);
 }
 
-/*
- * Symtab constant binding function.
- * Will bind strings to the symbol table.
- * Return value not used.
- */
-int
-bind_constant(node_t *root, int stackOffset)
-{
-	/* output for stage 6 */
-	if(outputStage == 6)
-		fprintf(stderr, "CONSTANT\n");	
 
-	/* check data type */	
-	switch(root->data_type.base_type) {
-	case STRING_TYPE:
-		strings_add(root->string_const);
-		break;
-	}
+int bind_function ( node_t *root, int stackOffset)
+{
+
+	if(outputStage == 6)
+		fprintf ( stderr, "FUNCTION: Start: %s\n", root->label);
+
+
+
+	if(outputStage == 6)
+		fprintf ( stderr, "FUNCTION: End\n");
+
+}
+
+int bind_declaration_list ( node_t *root, int stackOffset)
+{
+	if(outputStage == 6)
+		fprintf ( stderr, "DECLARATION_LIST: Start\n");
+
+
+
+	if(outputStage == 6)
+		fprintf ( stderr, "DECLARATION_LIST: End\n");
+
+}
+
+int bind_class ( node_t *root, int stackOffset)
+{
+	if(outputStage == 6)
+		fprintf(stderr, "CLASS: Start: %s\n", root->children[0]->label);
+
+	
+
+	if(outputStage == 6)
+			fprintf(stderr, "CLASS: End\n");
+
+}
+
+function_symbol_t* create_function_symbol(node_t* function_node)
+{
+
+}
+
+int bind_function_list ( node_t *root, int stackOffset)
+{
+	if(outputStage == 6)
+		fprintf ( stderr, "FUNCTION_LIST: Start\n");
+
+	
+
+	if(outputStage == 6)
+		fprintf ( stderr, "FUNCTION_LIST: End\n");
+
+}
+
+int bind_constant ( node_t *root, int stackOffset)
+{
+	return b_c(root, stackOffset);
+}
+
+
+symbol_t* create_symbol(node_t* declaration_node, int stackOffset)
+{
+
+}
+
+int bind_declaration ( node_t *root, int stackOffset)
+{
+
+	if(outputStage == 6)
+		fprintf(stderr, "DECLARATION: parameter/variable : '%s', offset: %d\n", root->label, stackOffset);
+
+}
+
+int bind_variable ( node_t *root, int stackOffset)
+{
+	if(outputStage == 6)
+		fprintf ( stderr, "VARIABLE: access: %s\n", root->label);
+
+}
+
+int bind_expression( node_t* root, int stackOffset)
+{
+	if(outputStage == 6)
+		fprintf( stderr, "EXPRESSION: Start: %s\n", root->expression_type.text);
+
+	
+
+	if(outputStage == 6)
+		fprintf( stderr, "EXPRESSION: End\n");
 
 }
 

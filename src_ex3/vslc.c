@@ -84,7 +84,8 @@ main ( int argc, char **argv )
     /* Assign nodes functions according to their type; Handout first time only? */
     assignFunctionsToNodes( root );
     /* Simplify the abstract syntax tree */
-    root->simplify( root, 0 );
+    root->simplify(root, 0);
+    //root = NULL;
     
     if ( outputStage == 4 ) { 
         exit(0); // Exit if we are only printing this stages debug information. "Build Simple Tree files"
@@ -109,15 +110,6 @@ main ( int argc, char **argv )
     }
     
     /* Print the entries and string indexes in the node tree "Entries files" */
-    if ( outputStage == 9) {
-        node_print_entries ( stderr, root, 0 );
-        exit(0);
-    }
-    
-    root->typecheck(root);
-    if (outputStage == 10) {
-    	exit(0);
-    }
     
     yylex_destroy(); // Free internal data structures of the scanner.
 
