@@ -19,7 +19,7 @@ bind_default(node_t *root, int stackOffset)
 {
 	for(int i = 0; i < root->n_children; ++i)
 		if(root->children[i] != NULL)
-			root->children[i]->bind_names(root->children[i], stackOffset + 1);
+			root->children[i]->bind_names(root->children[i], 0);
 }
 
 /*
@@ -46,14 +46,24 @@ bind_constant(node_t *root, int stackOffset)
 int
 bind_function(node_t *root, int stackOffset)
 {
+	int offset = -4;
 
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION: Start: %s\n", root->label);
 
-
-	for(int i = 0; i < root->n_children; ++i)
-		if(root->children[i] != NULL)
-			root->children[i]->bind_names(root->children[i], stackOffset + 1);
+	/* first child */
+	if(root->children[0] != NULL)
+		root->children[0]->bind_names(root->children[0], 0);
+	/* function statement list */
+	node_t *sl = root->children[1];
+	for(int i=0; i < sl->n_children; ++i) {
+		if(sl->children[i]->nodetype.index == DECLARATION_STATEMENT) {
+			sl->children[i]->bind_names(sl->children[i], offset);
+			offset -= 4;
+		} else {
+			sl->children[i]->bind_names(sl->children[i], 0);
+		}
+	}
 
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION: End\n");
@@ -77,8 +87,7 @@ bind_declaration_list ( node_t *root, int stackOffset)
 }
 
 int
-bind_class
-( node_t *root, int stackOffset)
+bind_class(node_t *root, int stackOffset)
 {
 	if(outputStage == 6)
 		fprintf(stderr, "CLASS: Start: %s\n", root->children[0]->label);
@@ -121,7 +130,7 @@ create_symbol(node_t* declaration_node, int stackOffset)
 }
 
 int
-bind_declaration ( node_t *root, int stackOffset)
+bind_declaration(node_t *root, int stackOffset)
 {
 
 	if(outputStage == 6)
