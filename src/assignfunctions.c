@@ -23,8 +23,29 @@ void assignFunctionsToNodes ( node_t *root )
 	// Here we assign the correct functions used by each node for bind names.
 	switch ( root->nodetype.index )
 	{
+		case FUNCTION_LIST: 
+			root->bind_names = bind_function_list;
+			break;
+		case FUNCTION: 
+			root->bind_names = bind_function;
+			break;
+		case DECLARATION_LIST:
+			root->bind_names = bind_declaration_list;
+			break;
+		case DECLARATION_STATEMENT:
+			root->bind_names = bind_declaration;
+			break;
 		case CONSTANT:
 			root->bind_names = bind_constant;
+			break;
+		case CLASS:
+			root->bind_names = bind_class;
+			break;
+		case VARIABLE:
+			root->bind_names = bind_variable;
+			break;
+		case EXPRESSION:
+			root->bind_names = bind_expression;
 			break;
 		default:
 			root->bind_names = bind_default;
