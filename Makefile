@@ -17,6 +17,7 @@ INCLUDEPATH=\
 
 CFLAGS+=  -g -D_POSIX_C_SOURCE -std=c99 ${INCLUDEPATH}
 LDFLAGS+= -L/usr/local/lib -Llib
+LDLIBS+=  -lghthash
 YFLAGS+=  --defines=work/parser.h -o y.tab.c
 
 # Targets:
@@ -37,7 +38,7 @@ bin/vslc: obj/vslc $(filter-out $(wildcard bin), bin)
 #
 # The compiler executable depends on everything having turned into object code
 #
-obj/vslc: work/scanner.o work/parser.o obj/vslc.o obj/nodetypes.o src/tree.o obj/symtab.o obj/bindnames.o obj/simplifynodes.o obj/assignfunctions.o
+obj/vslc: work/scanner.o work/parser.o obj/vslc.o obj/nodetypes.o src/tree.o src/symtab.o obj/bindnames.o src/simplifynodes.o obj/assignfunctions.o obj/typecheck.o src/bindsol.o
 
 #
 # For all the handwritten C files, there is a C file in 'src' and a matching
@@ -71,7 +72,6 @@ work/parser.h: work/parser.c
 clean:
 	if [ -e work ]; then rm -r work; fi
 	if [ -e obj ]; then rm -r obj; fi
-	if [ -e testOutput ]; then rm -r testOutput; fi
 purge: clean
 	if [ -e bin ]; then rm -r bin; fi
 
