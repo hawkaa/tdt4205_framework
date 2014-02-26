@@ -77,6 +77,18 @@ bind_function(node_t *root, int stackOffset)
 			--formal_var_offset;
 		}
 	}
+	
+	/* statement list */	
+	node_t *sl = root->children[1];
+	int automatic_var_offset = -1;
+	for(int i = 0; i < sl->n_children; ++i) {
+		sl->children[i]->bind_names(sl->children[i],
+				automatic_var_offset*OFFSET_SIZE);
+		if(sl->children[i]->nodetype.index == DECLARATION_STATEMENT) {
+			--automatic_var_offset;
+		}
+	}
+
 
 
 	/* exit function scope */
