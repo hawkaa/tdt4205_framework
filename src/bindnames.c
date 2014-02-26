@@ -159,9 +159,9 @@ int bind_constant ( node_t *root, int stackOffset)
 
 int bind_declaration ( node_t *root, int stackOffset)
 {
-
 	if(outputStage == 6)
 		fprintf(stderr, "DECLARATION: parameter/variable : '%s', offset: %d\n", root->label, stackOffset);
+	symbol_insert(root->label, create_symbol(root, stackOffset));
 
 }
 
