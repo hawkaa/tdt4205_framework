@@ -51,8 +51,10 @@ create_function_symbol(node_t* function_node)
 
 
 int bind_default ( node_t *root, int stackOffset)
-{
-	return b_d(root,stackOffset);
+{	
+	for(int i = 0; i < root->n_children; ++i)
+		if(root->children[i] != NULL)
+			root->children[i]->bind_names(root->children[i], stackOffset);
 }
 
 
@@ -212,29 +214,43 @@ bind_expression(node_t* root, int stackOffset)
 
 	switch(root->expression_type.index) {
 	case THIS_E:
-		/*s = malloc(sizeof(symbol_t));
+		s = malloc(sizeof(symbol_t));
 		s->label = STRDUP(thisClass);
 		s->stack_offset = 8;
 		s->depth = 0;
 		s->type.class_name = thisClass;
 		s->type.base_type = CLASS_TYPE;
-		root->entry = s;*/
+		root->entry = s;
 		break;
-	//case METH_CALL_E:
-	case CLASS_FIELD_E:
-		fprintf(stderr, "lookup\n");
+	case METH_CALL_E:
 		root->children[0]->bind_names(root->children[0], 0);
-		//s = root->entry;
-		fprintf(stderr, "lookehup\n");
+
+
+		root->function_entry = class_get_method(root->children[0]->entry->type.class_name, root->children[1]->label);
+		root->children[1]->function_entry = root->function_entry;
+
+		if(root->children[2] != NULL)
+			root->children[2]->bind_names(root->children[2], stackOffset);
+		break;
+	case CLASS_FIELD_E:
+		root->children[0]->bind_names(root->children[0], 0);	
+		root->entry = class_get_symbol(root->children[0]->entry->type.class_name, root->children[1]->label);
+		root->children[1]->entry = root->entry;
 
 		break;
 	case FUNC_CALL_E:
 		/* function call, retrieve function */
 		root->function_entry = function_get(root->children[0]->label);
+		if(root->children[1] != NULL)
+			root->children[1]->bind_names(root->children[1], stackOffset);
+		break;
+	case NEW_E:
+		root->class_entry = class_get(root->children[0]->data_type.class_name);
 		break;
 	default:
 		for(int i = 0; i < root->n_children; ++i)
-			root->children[i]->bind_names(root->children[i], 0);
+			if(root->children[i] != NULL)
+				root->children[i]->bind_names(root->children[i], stackOffset);
 	}
 	if(outputStage == 6)
 		fprintf( stderr, "EXPRESSION: End\n");
