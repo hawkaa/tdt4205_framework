@@ -181,6 +181,8 @@ bind_expression(node_t* root, int stackOffset)
 
 	switch(root->expression_type.index) {
 	case FUNC_CALL_E:
+		/* function call, retrieve function */
+		root->function_entry = function_get(root->children[0]->label);
 		break;
 	}
 	if(outputStage == 6)
