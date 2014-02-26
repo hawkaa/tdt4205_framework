@@ -131,7 +131,22 @@ bind_class(node_t *root, int stackOffset)
 		field_symbol = create_symbol(dl->children[i], i * OFFSET_SIZE);
 		class_insert_field(root->label, dl->children[i]->label, field_symbol);
 	}
-	
+
+	/* class methods */
+	node_t *fl = root->children[1];
+
+	/* iterate through function list */
+	for(int i = 0; i < fl->n_children; ++i) {
+		class_insert_method(root->label, fl->children[i]->label, create_function_symbol(fl->children[i]));
+	}
+	scope_add();
+	thisClass = root->label;
+	for(int i = 0; i < fl->n_children; ++i) {
+		fl->children[i]->bind_names(fl->children[i], 3);
+	}
+	thisClass = NULL;
+	scope_remove();
+
 
 	if(outputStage == 6)
 			fprintf(stderr, "CLASS: End\n");
@@ -191,10 +206,28 @@ bind_variable(node_t *root, int stackOffset)
 int
 bind_expression(node_t* root, int stackOffset)
 {
+	symbol_t *s;
 	if(outputStage == 6)
 		fprintf( stderr, "EXPRESSION: Start: %s\n", root->expression_type.text);
 
 	switch(root->expression_type.index) {
+	case THIS_E:
+		/*s = malloc(sizeof(symbol_t));
+		s->label = STRDUP(thisClass);
+		s->stack_offset = 8;
+		s->depth = 0;
+		s->type.class_name = thisClass;
+		s->type.base_type = CLASS_TYPE;
+		root->entry = s;*/
+		break;
+	//case METH_CALL_E:
+	case CLASS_FIELD_E:
+		fprintf(stderr, "lookup\n");
+		root->children[0]->bind_names(root->children[0], 0);
+		//s = root->entry;
+		fprintf(stderr, "lookehup\n");
+
+		break;
 	case FUNC_CALL_E:
 		/* function call, retrieve function */
 		root->function_entry = function_get(root->children[0]->label);
