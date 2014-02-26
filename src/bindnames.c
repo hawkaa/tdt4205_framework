@@ -7,6 +7,8 @@ int b_c(node_t* root, int stack_offset);
 
 static const int OFFSET_SIZE = 4;
 
+#define STRDUP(s) strncpy ( (char*)malloc ( strlen(s)+1 ), s, strlen(s)+1 )
+
 symbol_t*
 create_symbol(node_t* declaration_node, int stackOffset)
 {
@@ -123,6 +125,8 @@ bind_class(node_t *root, int stackOffset)
 	class_symbol->size = 0; /* size added automatically */
 	class_symbol->symbols = ght_create(8);
 	class_symbol->functions = ght_create(8);
+	
+	//fprintf(stderr, "Adding %s\n", root->label);
 
 	class_add(root->label, class_symbol);
 
@@ -164,6 +168,7 @@ int bind_function_list ( node_t *root, int stackOffset)
 	scope_add();
 
 	/* all functions must be added to symbol table */
+	function_symbol_t *s;
 	for(int i = 0; i < root->n_children; ++i)
 		function_add(root->children[i]->label, create_function_symbol(
 			root->children[i]));
@@ -201,7 +206,7 @@ bind_variable(node_t *root, int stackOffset)
 {
 	if(outputStage == 6)
 		fprintf ( stderr, "VARIABLE: access: %s\n", root->label);
-	
+		
 	root->entry = symbol_get(root->label);
 }
 
