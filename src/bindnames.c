@@ -105,7 +105,11 @@ int bind_function_list ( node_t *root, int stackOffset)
 	for(int i = 0; i < root->n_children; ++i)
 		function_add(root->children[i]->label, create_function_symbol(
 			root->children[i]));
-	
+
+	/* bind all functions */
+	for(int i = 0; i < root->n_children; ++i)
+		root->children[i]->bind_names(root->children[i], 2);
+
 	/* exit scope */
 	scope_remove();
 
