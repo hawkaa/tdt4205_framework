@@ -111,11 +111,14 @@ int bind_declaration_list ( node_t *root, int stackOffset)
 
 }
 
-int bind_class ( node_t *root, int stackOffset)
+int
+bind_class(node_t *root, int stackOffset)
 {
 	if(outputStage == 6)
 		fprintf(stderr, "CLASS: Start: %s\n", root->children[0]->label);
-
+	
+	class_symbol_t *class_symbol = malloc(sizeof(class_symbol));
+	class_symbol->size = root->children[0]->n_children;
 	
 
 	if(outputStage == 6)
@@ -184,6 +187,9 @@ bind_expression(node_t* root, int stackOffset)
 		/* function call, retrieve function */
 		root->function_entry = function_get(root->children[0]->label);
 		break;
+	default:
+		for(int i = 0; i < root->n_children; ++i)
+			root->children[i]->bind_names(root->children[i], 0);
 	}
 	if(outputStage == 6)
 		fprintf( stderr, "EXPRESSION: End\n");
