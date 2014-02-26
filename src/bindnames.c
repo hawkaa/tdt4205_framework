@@ -118,7 +118,19 @@ bind_class(node_t *root, int stackOffset)
 		fprintf(stderr, "CLASS: Start: %s\n", root->children[0]->label);
 	
 	class_symbol_t *class_symbol = malloc(sizeof(class_symbol));
-	class_symbol->size = root->children[0]->n_children;
+	class_symbol->size = 0; /* size added automatically */
+	class_symbol->symbols = ght_create(8);
+	class_symbol->functions = ght_create(8);
+
+	class_add(root->label, class_symbol);
+
+	/* class fields */
+	node_t *dl = root->children[0];
+	symbol_t *field_symbol;
+	for (int i = 0; i < dl->n_children; ++i) {
+		field_symbol = create_symbol(dl->children[i], i * OFFSET_SIZE);
+		class_insert_field(root->label, dl->children[i]->label, field_symbol);
+	}
 	
 
 	if(outputStage == 6)
