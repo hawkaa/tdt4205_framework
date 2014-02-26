@@ -3,7 +3,6 @@
 
 // Bind names:
 #include "bindnames.h"
-#include "typecheck.h"
 
 
 /* Assign nodes functions according to their type */
@@ -63,12 +62,15 @@ void assignFunctionsToNodes ( node_t *root )
 		
 		
 		case STATEMENT_LIST:
-		case EXPRESSION_LIST: case VARIABLE_LIST: case CLASS_LIST:
+		case EXPRESSION_LIST:
+		case VARIABLE_LIST:
+		case CLASS_LIST:
 			root->simplify = simplify_list;
 			break;
 
 		
-		case DECLARATION_LIST: case FUNCTION_LIST:
+		case DECLARATION_LIST:
+		case FUNCTION_LIST:
 			root->simplify = simplify_list_with_null;
 			break;
 		
@@ -78,7 +80,9 @@ void assignFunctionsToNodes ( node_t *root )
 			break;
 
 		
-		case STATEMENT: case PARAMETER_LIST: case ARGUMENT_LIST:
+		case STATEMENT:
+		case PARAMETER_LIST:
+		case ARGUMENT_LIST:
 			root->simplify = simplify_single_child;
 			break;
 		
@@ -91,25 +95,12 @@ void assignFunctionsToNodes ( node_t *root )
 			root->simplify = simplify_expression;
 			break;
 
-        case CLASS:
-            root->simplify = simplify_class;
-            break;
+        	case CLASS:
+			root->simplify = simplify_class;
+			break;
 		
 		default:
 			root->simplify = simplify_default;
-			break;
-	}
-	
-	switch( root->nodetype.index )
-	{
-		case EXPRESSION:
-			root->typecheck = typecheck_expression;
-			break;
-		case VARIABLE:
-			root->typecheck = typecheck_variable;
-			break;
-		default:
-			root->typecheck = typecheck_default;
 			break;
 	}
 }
