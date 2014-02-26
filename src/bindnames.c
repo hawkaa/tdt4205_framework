@@ -304,21 +304,30 @@ bind_expression(node_t* root, int stackOffset)
 		break;
 
 	case METH_CALL_E:
-		if(thisClass != NULL)
-			class_name = thisClass;
-		else
-			class_name = get_class_name(root);
 
+		/* finding class name (might be this) */
+		if(thisClass != NULL){
+			//fprintf(stderr, "hehe\n");
+			class_name = thisClass;
+		} else {
+			//fprintf(stderr, "hehe\n");
+			class_name = get_class_name(root);
+		}
+		
+		/* this one has two children */
+
+		/* second one is always method name */
 		meth_name = root->children[1]->label;	
 
-		class_get_method(class_name, meth_name);
-		
+		//class_get_method(class_name, meth_name);
+	
+		/*
 
-		//root->children[0]->bind_names(root->children[0], 0);
+		root->children[0]->bind_names(root->children[0], 0);
 		
 		if(root->children[2] != NULL)
 			root->children[2]->bind_names(root->children[2], 0);
-
+		*/
 		break;
 	default:
 		for(int i = 0; i < root->n_children; ++i)
