@@ -172,13 +172,16 @@ int bind_variable ( node_t *root, int stackOffset)
 
 }
 
-int bind_expression( node_t* root, int stackOffset)
+int
+bind_expression(node_t* root, int stackOffset)
 {
 	if(outputStage == 6)
 		fprintf( stderr, "EXPRESSION: Start: %s\n", root->expression_type.text);
 
-	
-
+	switch(root->expression_type.index) {
+	case FUNC_CALL_E:
+		break;
+	}
 	if(outputStage == 6)
 		fprintf( stderr, "EXPRESSION: End\n");
 
