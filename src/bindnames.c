@@ -44,7 +44,6 @@ create_function_symbol(node_t* function_node)
 		fs->nArguments = vl->n_children;
 	} else {
 		/* no children, so no need to alloc */
-		fs->argument_types = malloc(0);
 		fs->nArguments = 0;
 	}
 	return fs;
