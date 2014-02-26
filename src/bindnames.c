@@ -5,6 +5,8 @@ char* thisClass;
 int b_d(node_t* root, int stack_offset);
 int b_c(node_t* root, int stack_offset);
 
+static const int OFFSET_SIZE = 4;
+
 symbol_t*
 create_symbol(node_t* declaration_node, int stackOffset)
 {
@@ -61,7 +63,24 @@ bind_function(node_t *root, int stackOffset)
 	/* debug output for stage 6 */
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION: Start: %s\n", root->label);
+	
+	/* function introduces a new scope */
+	scope_add();
 
+	/* variable list */
+	node_t *vl = root->children[0];
+	if(vl != NULL) {
+		int formal_var_offset = stackOffset + vl->n_children - 1;
+		for(int i = 0; i < vl->n_children; ++i) {
+			vl->children[i]->bind_names(vl->children[i],
+					formal_var_offset*OFFSET_SIZE);
+			--formal_var_offset;
+		}
+	}
+
+
+	/* exit function scope */
+	scope_remove();
 
 	/* debug output for stage 6 */
 	if(outputStage == 6)
