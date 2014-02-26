@@ -62,15 +62,6 @@ bind_function(node_t *root, int stackOffset)
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION: Start: %s\n", root->label);
 
-	/* function list is a new scope */
-	scope_add();
-
-	/* all functions must be added to symbol table */
-	for(int i = 0; i < root->n_children; ++i)
-		function_add(root->children[i]->label, create_function_symbol(
-			root->children[i]));
-	
-	
 
 	/* debug output for stage 6 */
 	if(outputStage == 6)
@@ -107,7 +98,17 @@ int bind_function_list ( node_t *root, int stackOffset)
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION_LIST: Start\n");
 
+	/* function list is a new scope */
+	scope_add();
+
+	/* all functions must be added to symbol table */
+	for(int i = 0; i < root->n_children; ++i)
+		function_add(root->children[i]->label, create_function_symbol(
+			root->children[i]));
 	
+	/* exit scope */
+	scope_remove();
+
 
 	if(outputStage == 6)
 		fprintf ( stderr, "FUNCTION_LIST: End\n");
