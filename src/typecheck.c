@@ -1,7 +1,9 @@
 #include "typecheck.h"
 extern int outputStage;
 
-void type_error(node_t* root){
+void
+type_error(node_t* root)
+{
 	fprintf(stderr, "Type error at:\n");
 	if(root != NULL){
 		fprintf(stderr,"%s", root->nodetype.text);
@@ -14,20 +16,19 @@ void type_error(node_t* root){
 	exit(-1);
 }
 
-
-
-data_type_t typecheck_default(node_t* root)
+data_type_t
+typecheck_default(node_t* root)
 {
 	for(int i = 0; i < root->n_children; ++i) {
-		if(root->children[i] != NULL)
+		if (root->children[i] != NULL)
 			root->children[i]->typecheck(root->children[i]);
 	}
 
 }
 
-data_type_t typecheck_expression(node_t* root)
+data_type_t
+typecheck_expression(node_t* root)
 {
-
 	if(outputStage == 10)
 		fprintf( stderr, "Type checking expression %s\n", root->expression_type.text);
 	
