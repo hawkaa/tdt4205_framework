@@ -1,4 +1,6 @@
+/* local includes */
 #include "bindnames.h"
+
 extern int outputStage; // This variable is located in vslc.c
 char* thisClass;
 
@@ -37,7 +39,7 @@ create_function_symbol(node_t* function_node)
 		node_t *vl = function_node->children[0];
 
 		/* allocate and save data types */
-		fs->argument_types = malloc(sizeof(data_type_t*)
+		fs->argument_types = malloc(sizeof(data_type_t)
 						* vl->n_children);
 		for(int i = 0; i < vl->n_children; ++i)
 			fs->argument_types[i] = vl->children[i]->data_type;
@@ -46,6 +48,7 @@ create_function_symbol(node_t* function_node)
 		fs->nArguments = vl->n_children;
 	} else {
 		/* no children, so no need to alloc */
+		fs->argument_types = malloc(sizeof(data_type_t)*0);
 		fs->nArguments = 0;
 	}
 	return fs;
@@ -128,14 +131,14 @@ bind_class(node_t *root, int stackOffset)
 	
 	//fprintf(stderr, "Adding %s\n", root->label);
 
-	class_add(root->label, class_symbol);
+	class_add(STRDUP(root->label), class_symbol);
 
 	/* class fields */
 	node_t *dl = root->children[0];
 	symbol_t *field_symbol;
 	for (int i = 0; i < dl->n_children; ++i) {
 		field_symbol = create_symbol(dl->children[i], i * OFFSET_SIZE);
-		class_insert_field(root->label, dl->children[i]->label, field_symbol);
+		class_insert_field(STRDUP(root->label), STRDUP(dl->children[i]->label), field_symbol);
 	}
 
 	/* class methods */
@@ -143,7 +146,7 @@ bind_class(node_t *root, int stackOffset)
 
 	/* iterate through function list */
 	for(int i = 0; i < fl->n_children; ++i) {
-		class_insert_method(root->label, fl->children[i]->label, create_function_symbol(fl->children[i]));
+		class_insert_method(STRDUP(root->label), STRDUP(fl->children[i]->label), create_function_symbol(fl->children[i]));
 	}
 	scope_add();
 	thisClass = root->label;
@@ -169,9 +172,10 @@ int bind_function_list ( node_t *root, int stackOffset)
 
 	/* all functions must be added to symbol table */
 	function_symbol_t *s;
-	for(int i = 0; i < root->n_children; ++i)
-		function_add(root->children[i]->label, create_function_symbol(
+	for(int i = 0; i < root->n_children; ++i) {
+		function_add(STRDUP(root->children[i]->label), create_function_symbol(
 			root->children[i]));
+	}
 
 	/* bind all functions */
 	for(int i = 0; i < root->n_children; ++i)
@@ -186,10 +190,31 @@ int bind_function_list ( node_t *root, int stackOffset)
 
 }
 
-int bind_constant ( node_t *root, int stackOffset)
+/*
+ * Symtab constant binding function.
+ * Will bind strings to the symbol table.
+ * Return value not used.
+ */
+int
+bind_constant(node_t *root, int stackOffset)
 {
-	return b_c(root, stackOffset);
+	/* output for stage 6 */
+	if(outputStage == 6)
+		fprintf(stderr, "CONSTANT\n");	
+
+	/* check data type */	
+	switch(root->data_type.base_type) {
+	case STRING_TYPE:
+		strings_add(STRDUP(root->string_const));
+		break;
+	}
+
 }
+/*int bind_constant ( node_t *root, int stackOffset)
+{
+	fprintf(stderr, "binding %s\n", root->string_value);
+	return b_c(root, stackOffset);
+}*/
 
 
 
@@ -238,7 +263,7 @@ bind_expression(node_t* root, int stackOffset)
 			root->children[2]->bind_names(root->children[2], stackOffset);
 		break;
 	case CLASS_FIELD_E:
-		root->children[0]->bind_names(root->children[0], 0);	
+		root->children[0]->bind_names(root->children[0], 0);
 		root->entry = class_get_symbol(root->children[0]->entry->type.class_name, root->children[1]->label);
 		root->children[1]->entry = root->entry;
 
