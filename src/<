@@ -112,20 +112,11 @@ typecheck_expression(node_t* root)
 			type_error(root);
 		}
 		break;
-	case FUNC_CALL_E:
-		if(root->children[1] != NULL)
-			root->children[1]->typecheck(root->children[1]);
-		break;
-	case METH_CALL_E:
 	case CLASS_FIELD_E:
-		root->children[0]->typecheck(root->children[0]);
-		break;
-	case VARIABLE_E:
-	case CONSTANT_E:
-	case NEW_E:
-	case DEFAULT_E:
+	case FUNC_CALL_E:
+	case METH_CALL_E:
 	case THIS_E:
-		/* dunno what to do with these */
+		root->children[1]->typecheck(root->children[1]);
 		break;
 	}
 	
