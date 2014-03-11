@@ -38,7 +38,7 @@ bin/vslc: obj/vslc $(filter-out $(wildcard bin), bin)
 #
 # The compiler executable depends on everything having turned into object code
 #
-obj/vslc: work/scanner.o work/parser.o obj/vslc.o obj/nodetypes.o src/tree.o src/symtab.o obj/bindnames.o src/simplifynodes.o obj/assignfunctions.o obj/typecheck.o src/bindsol.o
+obj/vslc: work/scanner.o work/parser.o obj/vslc.o obj/nodetypes.o src/tree.o src/symtab.o src/bindnames.o src/simplifynodes.o obj/assignfunctions.o obj/typecheck.o obj/generator.o src/typecheck_sol.o
 
 #
 # For all the handwritten C files, there is a C file in 'src' and a matching

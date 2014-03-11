@@ -18,6 +18,42 @@ void assignFunctionsToNodes ( node_t *root )
 		assignFunctionsToNodes ( root->children[i] );
 	}
 	
+	switch ( root->nodetype.index )
+	{
+		case PROGRAM: 
+			root->generate = gen_PROGRAM;
+			break;
+		case FUNCTION: 
+			root->generate = gen_FUNCTION;
+			break;
+		case DECLARATION_STATEMENT:
+			root->generate = gen_DECLARATION_STATEMENT;
+			break;
+		case PRINT_STATEMENT:
+			root->generate = gen_PRINT_STATEMENT;
+			break;
+		case EXPRESSION: 
+			root->generate = gen_EXPRESSION;
+			break;
+		case VARIABLE: 
+			root->generate = gen_VARIABLE;
+			break;
+		case CONSTANT:
+			root->generate = gen_CONSTANT;
+			break;
+		case ASSIGNMENT_STATEMENT: 
+			root->generate = gen_ASSIGNMENT_STATEMENT;
+			break;
+		case RETURN_STATEMENT: 
+			root->generate = gen_RETURN_STATEMENT;
+			break;
+		
+		
+		default:
+			root->generate = gen_default;
+			break;
+	}
+	
 	
 	
 	
@@ -104,6 +140,9 @@ void assignFunctionsToNodes ( node_t *root )
 	{
 		case EXPRESSION:
 			root->typecheck = typecheck_expression;
+			break;
+		case ASSIGNMENT_STATEMENT:
+			root->typecheck = typecheck_assignment;
 			break;
 		case VARIABLE:
 			root->typecheck = typecheck_variable;

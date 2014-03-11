@@ -2,8 +2,7 @@
 
 static char *outfile = NULL;
 int outputStage = -1;
-int peephole = 0;
-int arch = 0; //ARM = 1, x86 = 0
+int arch = 1; //ARM = 1, x86 = 0
 
 static void
 options ( int argc, char **argv )
@@ -118,6 +117,38 @@ main ( int argc, char **argv )
     if (outputStage == 10) {
     	exit(0);
     }
+
+
+    /* Parsing and semantics are ok, redirect stdout to file (if requested) */
+    if ( outfile != NULL )
+    {
+        if ( freopen ( outfile, "w", stdout ) == NULL )
+        {
+            fprintf ( stderr, "Could not open output file '%s'\n", outfile );
+            exit ( EXIT_FAILURE );
+        }
+        free ( outfile );
+    }
+
+	root->generate(root, 1);
+	/*
+	if(outputStage > 10 )
+    	generate ( NULL, NULL, root ); // Output nothing, for later debugging stages.
+    else if(outputStage == 10 )
+    	generate ( NULL, stderr, root ); // Output only the traversal process.
+    else if(outputStage == -1 )
+    	generate ( stderr, NULL, root ); // Output the asm as no debug text is made.
+	*/
+	
+    //destroy_subtree ( stderr, root );
+    
+    if ( outputStage == 11 ) {
+    	destroy_subtree ( stderr, root );
+        exit(0);
+    } else
+    	destroy_subtree ( NULL, root );
+    
+    symtab_finalize();
     
     yylex_destroy(); // Free internal data structures of the scanner.
 

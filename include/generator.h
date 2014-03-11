@@ -14,17 +14,17 @@
     instruction_add ( STRING,       STRDUP("main:"), NULL, 0, 0 );      \
     instruction_add ( PUSH,         lr, NULL, 0, 0 );                   \
     instruction_add ( PUSH,         fp, NULL, 0, 0 );                   \
-    instruction_add ( MOVE,         sp, fp, 0, 0 );                     \
+    instruction_add ( MOVE,         fp, sp, 0, 0 );                     \
     /*instruction_add ( MOVE,         esp, esi, 8, 0 );*/               \
-    instruction_add ( MOVE,         r0, r5, 0, 0 );                     \
+    instruction_add ( MOVE,         r5, r0, 0, 0 );                     \
     instruction_add ( DECL,         r5, NULL, 0, 0 );                   \
     instruction_add ( JUMPZERO,     STRDUP("noargs"), NULL, 0, 0 );     \
-    instruction_add ( MOVE,         r1, r6, 0, 0 );                     \
+    instruction_add ( MOVE,         r6, r1, 0, 0 );                     \
     instruction_add ( STRING,       STRDUP("pusharg:"), NULL, 0, 0 );   \
     instruction_add ( MOVE,         r6, r0, 4, 0 );                     \
     instruction_add ( ADD,          STRDUP("#4"), r6, 0, 0 );           \
-    instruction_add ( MOVE,         STRDUP("#0"), r1, 0, 0 );           \
-    instruction_add ( MOVE,         STRDUP("#10"), r2, 0, 0 );          \
+    instruction_add ( MOVE,         r1, STRDUP("#0"), 0, 0 );           \
+    instruction_add ( MOVE,         r2, STRDUP("#10"), 0, 0 );          \
     instruction_add ( SYSCALL,      STRDUP("strtol"), NULL, 0, 0 );     \
     /*instruction_add ( ADD,          STRDUP("#12"), esp, 0, 0 ); */    \
     instruction_add ( PUSH,         r0, NULL, 0, 0 );                   \
@@ -34,8 +34,8 @@
 } while ( false )
 
 #define TEXT_TAIL_ARM() do {\
-    instruction_add ( MOVE,         ebp, esp, 0, 0 );       \
-    instruction_add ( POP,          ebp, NULL, 0, 0 );      \
+    instruction_add ( MOVE,         sp, fp, 0, 0 );       \
+    instruction_add ( POP,          fp, NULL, 0, 0 );      \
     instruction_add ( SYSCALL, STRDUP("exit"), NULL, 0, 0 );\
     instruction_add ( STRING,  STRDUP(".end"), NULL, 0, 0 );\
 } while ( false )
@@ -49,13 +49,14 @@
 	instruction_add ( STRING,       STRDUP("\tpop {r0-r11, pc}"), NULL, 0, 0 );      \
 	instruction_add ( STRING,       STRDUP("debugprint_r0:"), NULL, 0, 0 );      \
 	instruction_add ( STRING,       STRDUP("\tpush {r0-r11, lr}"), NULL, 0, 0 );      \
-	instruction_add ( MOVE,         r0, r1, 0, 0 );                     \
+	instruction_add ( MOVE,         r1, r0, 0, 0 );                     \
 	instruction_add ( STRING,       STRDUP("\tmovw	r0, #:lower16:.DEBUGINT"), NULL, 0, 0 );      \
 	instruction_add ( STRING,       STRDUP("\tmovt	r0, #:upper16:.DEBUGINT"), NULL, 0, 0 );      \
 	instruction_add ( SYSCALL, STRDUP("printf"), NULL, 0, 0 );\
 	instruction_add ( STRING,       STRDUP("\tpop {r0-r11, pc}"), NULL, 0, 0 );      \
 } while ( false )
 
+/*
 #define TEXT_HEAD() do {\
     instruction_add ( STRING,       STRDUP("main:"), NULL, 0, 0 );      \
     instruction_add ( PUSH,         ebp, NULL, 0, 0 );                  \
@@ -82,6 +83,7 @@
     instruction_add ( PUSH, eax, NULL, 0, 0 );              \
     instruction_add ( SYSCALL, STRDUP("exit"), NULL, 0, 0 );\
 } while ( false )
+*/
 
 
 
