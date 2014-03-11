@@ -1,16 +1,21 @@
 /* local includes */
 #include "bindnames.h"
 
+/* located in vslc.c */
 extern int outputStage; // This variable is located in vslc.c
+
+/* keeps track of current class if inside (using THIS) */
 char* thisClass;
 
-int b_d(node_t* root, int stack_offset);
-int b_c(node_t* root, int stack_offset);
 
 static const int OFFSET_SIZE = 4;
 
+/* duplicates string */
 #define STRDUP(s) strncpy ( (char*)malloc ( strlen(s)+1 ), s, strlen(s)+1 )
 
+/*
+ * Will create a symbol node with given offset
+ */
 symbol_t*
 create_symbol(node_t* declaration_node, int stackOffset)
 {
@@ -148,6 +153,7 @@ bind_class(node_t *root, int stackOffset)
 	for(int i = 0; i < fl->n_children; ++i) {
 		class_insert_method(STRDUP(root->label), STRDUP(fl->children[i]->label), create_function_symbol(fl->children[i]));
 	}
+
 	scope_add();
 	thisClass = root->label;
 	for(int i = 0; i < fl->n_children; ++i) {
