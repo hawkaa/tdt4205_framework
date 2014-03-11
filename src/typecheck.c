@@ -56,9 +56,43 @@ data_type_t typecheck_expression(node_t* root)
 		fprintf( stderr, "Type checking expression %s\n", root->expression_type.text);
 
 	toReturn = te(root);
+
+	data_type_t actual_param, formal_param;
+	node_t *params;
 	//Insert additional checking here
+	switch (root->expression_type.index) {
+	case FUNC_CALL_E:
+	case METH_CALL_E:
+		/* we have a function call */
+		params = root->children[1];
+
+		if (params != NULL) {
+			/* check number of arguments */
+			if (params->n_children != root->function_entry->nArguments)
+				type_error(root);
+
+			/* iterate over children */
+			for (int i = 0; i < params->n_children; ++i) {
+				actual_param = params->children[i]->typecheck(params->children[i]);
+				formal_param = root->function_entry->argument_types[i];
+				if (!equal_types(actual_param, formal_param)) {
+					type_error(root);
+				}
+			}
+		}
+		return root->function_entry->return_type;
 	
-	fprintf(stderr, "hehe\n");
+	case CLASS_FIELD_E:
+		return root->children[1]->entry->type;
+		
+	case VARIABLE_E:
+	case NEW_E:
+	case DEFAULT_E:
+	case THIS_E:
+		break;
+	}
+
+	
 
 	return toReturn;	
 	
