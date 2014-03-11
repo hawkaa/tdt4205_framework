@@ -63,8 +63,10 @@ data_type_t typecheck_expression(node_t* root)
 	switch (root->expression_type.index) {
 	case FUNC_CALL_E:
 	case METH_CALL_E:
-		/* we have a function call */
-		params = root->children[1];
+		if (root->expression_type.index == FUNC_CALL_E)
+			params = root->children[1];
+		else
+			params = root->children[2];
 
 		if (params != NULL) {
 			/* check number of arguments */
@@ -84,12 +86,6 @@ data_type_t typecheck_expression(node_t* root)
 	
 	case CLASS_FIELD_E:
 		return root->children[1]->entry->type;
-		
-	case VARIABLE_E:
-	case NEW_E:
-	case DEFAULT_E:
-	case THIS_E:
-		break;
 	}
 
 	
