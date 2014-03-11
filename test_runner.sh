@@ -10,8 +10,8 @@ correctDir="correct_output"
 
 warningsAssembler=0
 
-singleStage=12
-upToStage=0
+singleStage=10
+upToStage=10
 
 
 
