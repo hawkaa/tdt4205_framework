@@ -10,8 +10,8 @@ correctDir="correct_output"
 
 warningsAssembler=0
 
-singleStage=10
-upToStage=10
+singleStage=12
+upToStage=0
 
 
 
@@ -41,7 +41,7 @@ for inputFile in `ls $vslProgramDir/*.vsl`; do
 		./bin/vslc < $inputFile 2> testOutput/$inputFileBase.s
 		
 		if [ $makeForARM -eq 1 ]; then
-			arm-linux-gnueabihf-gcc-4.6 -static testOutput/$inputFileBase.s -o testOutput/a.out 2> testOutput/$inputFileBase.asmError
+			arm-linux-gnueabi-gcc -static testOutput/$inputFileBase.s -o testOutput/a.out 2> testOutput/$inputFileBase.asmError
 			#arm-linux-gnueabihf-gcc-4.6 -static testOutput/$inputFileBase.s -o testOutput/a.out 2> testOutput/$inputFileBase.asmError
 		else
 			gcc -m32 testOutput/$inputFileBase.s -o testOutput/a.out 2> testOutput/$inputFileBase.asmError

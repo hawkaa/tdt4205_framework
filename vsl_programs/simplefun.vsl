@@ -1,7 +1,7 @@
 INT FUNC funcall ()
 START
     INT x;
-    x := my_function( 5, 10 );
+    PRINT 5, 5;
     RETURN 0;
 END
 

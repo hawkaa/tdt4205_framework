@@ -16,7 +16,7 @@ typedef enum {
 static char
 	*lr = "lr", *r0 = "r0", *r1 = "r1", *r2 = "r2", *r3 = "r3",
 	*fp = "fp", *sp = "sp", *r5 = "r5", *r6 = "r6",
-	*d0 = "d0", *d1="d1", *s0 = "s0", *s1 = "s1";
+	*d0 = "d0", *d1="d1", *s0 = "s0", *s1 = "s1", *pc = "pc";
 
 
 /* A struct to make linked lists from instructions */
@@ -44,7 +44,8 @@ static int nodeCounter = 0;
 
 /* Provided auxiliaries... */
 
-static void instruction_append ( instruction_t *next )
+static void
+instruction_append ( instruction_t *next )
 {
 	if ( start != NULL )
 	{
@@ -56,7 +57,8 @@ static void instruction_append ( instruction_t *next )
 }
 
 
-static void instruction_add ( opcode_t op, char *arg1, char *arg2, int off1, int off2 )
+static void
+instruction_add ( opcode_t op, char *arg1, char *arg2, int off1, int off2 )
 {
 	instruction_t *i = (instruction_t *) malloc ( sizeof(instruction_t) );
 	*i = (instruction_t) { op, {arg1, arg2}, {off1, off2}, NULL };
@@ -69,7 +71,8 @@ static void instruction_add ( opcode_t op, char *arg1, char *arg2, int off1, int
  * Makes a comment in the assembly to guide.
  * Also prints a copy to the debug stream if needed.
  */
-static void tracePrint( const char * string, ... )
+static void
+tracePrint( const char * string, ... )
 {
 	va_list args;
 	char buff[1000];
@@ -100,8 +103,13 @@ void gen_default ( node_t *root, int scopedepth)
 			root->children[i]->generate ( root->children[i], scopedepth );
 }
 
-
-void gen_PROGRAM ( node_t *root, int scopedepth)
+/*
+ * Generate Program
+ * TODO
+ * Need to insert a call to the first function
+ */
+void
+gen_PROGRAM(node_t *root, int scopedepth)
 {
 	/* Output the data segment */
 	if( outputStage == 12 )
@@ -117,7 +125,7 @@ void gen_PROGRAM ( node_t *root, int scopedepth)
 	
 
 	/* TODO: Insert a call to the first defined function here */
-
+	instruction_add(CALL, root->children[0]->children[0]->label, NULL, 0, 0);
 
 	tracePrint("End PROGRAM\n");
 
@@ -130,13 +138,33 @@ void gen_PROGRAM ( node_t *root, int scopedepth)
 
 
 
-void gen_FUNCTION ( node_t *root, int scopedepth )
+void
+gen_FUNCTION(node_t *root, int scopedepth)
 {
+	tracePrint ( "Starting FUNCTION (%s) with depth %d\n", root->label, scopedepth);
+	
+	/* create function label */
+	instruction_add(LABEL, STRDUP(root->label), NULL, 0, 0);
 
+	/* save return address */
+	instruction_add(PUSH, lr, NULL, 0, 0);
 
-    tracePrint ( "Starting FUNCTION (%s) with depth %d\n", root->label, scopedepth);
-    
-    
+	/* save old frame pointer */
+	instruction_add(PUSH, fp, NULL, 0, 0);
+
+	/* save current stack pointer to frame pointer */
+	instruction_add(MOVE, fp, sp, 0, 0);	
+	for (int i = 0; i < root->children[1]->n_children; ++i) {
+		root->children[1]->children[i]->generate(root->children[1]->children[i], scopedepth);
+	}
+   
+
+   	/* restore old frame  and stack pointers */
+	instruction_add(MOVE, sp, fp, 0, 0);
+	instruction_add(POP, fp, NULL, 0, 0);
+
+	/* return to previous function */
+   	instruction_add(POP, pc, NULL, 0, 0); 
 
 
 	//Leaving the scope, decreasing depth
@@ -148,18 +176,29 @@ void gen_FUNCTION ( node_t *root, int scopedepth )
 
 
 
-
-void gen_DECLARATION_STATEMENT (node_t *root, int scopedepth)
+/*
+ * Generate Declaration Statement
+ * TODO
+ *
+ */
+void
+gen_DECLARATION_STATEMENT (node_t *root, int scopedepth)
 {
 	tracePrint("Starting DECLARATION: adding space on stack\n");
 
+	/* make space on the stack for automatic variables */
+	instruction_add(PUSH, r0, NULL, 0, 0);
 
 
 	tracePrint("Ending DECLARATION\n");
 }
 
-
-void gen_PRINT_STATEMENT(node_t* root, int scopedepth)
+/*
+ * Generate Print statement.
+ * This function is already done for us
+ */
+void
+gen_PRINT_STATEMENT(node_t* root, int scopedepth)
 {
 	tracePrint("Starting PRINT_STATEMENT\n");
 
@@ -228,75 +267,130 @@ void gen_PRINT_STATEMENT(node_t* root, int scopedepth)
 	tracePrint("Ending PRINT_STATEMENT\n");
 }
 
-
-void gen_EXPRESSION ( node_t *root, int scopedepth )
+/*
+ * Generate Expression
+ * TODO
+ */
+void
+gen_EXPRESSION(node_t *root, int scopedepth)
 {
-	
-	tracePrint ( "Starting EXPRESSION of type %s\n", (char*) root->expression_type.text);
+	/* debug output */
+	tracePrint("Starting EXPRESSION of type %s\n", (char*) root->expression_type.text);
 
-	switch(root->expression_type.index){
-
+	switch (root->expression_type.index){
 		case FUNC_CALL_E:
+		/* function calls is the only thing to be implemented in this task */
 		
-	
+		/* push all arguments */
+		if (root->children[1] != NULL) {
+			for (int i = 0; i < root->children[1]->n_children; ++i) {
+				/* evaluate expression */
+				root->children[1]->children[i]->generate(root->children[1]->children[i], scopedepth);
+
+			}
+		}
+
+		/* jump to the label */
+		instruction_add(CALL, root->children[0]->label, NULL, 0, 0);
+
+		/* handle return value */
+		instruction_add(PUSH, r0, NULL, 0, 0);
 
 		default:
 			break;
 	}
-
 	tracePrint ( "Ending EXPRESSION of type %s\n", (char*) root->expression_type.text);
 }
 
-
-
-
-
-
-
-
-
-
-void gen_VARIABLE ( node_t *root, int scopedepth )
+/*
+ * Generate Variable
+ * TODO
+ */
+void
+gen_VARIABLE(node_t *root, int scopedepth)
 {
 	
 	tracePrint ( "Starting VARIABLE\n");
-
 	
+	/* load rom memory using stack offset form symbol table */
+	instruction_add(LOAD, r0, fp, 0, root->entry->stack_offset);
+	instruction_add(PUSH, r0, NULL, 0, 0);
 
 	tracePrint ( "End VARIABLE %s, stack offset: %d\n", root->label, root->entry->stack_offset);
 }
 
-void gen_CONSTANT (node_t * root, int scopedepth)
+/*
+ * Generate Constant
+ * TODO
+ * Move constant to a register, and then to the top of the stack
+ */
+void
+gen_CONSTANT(node_t *root, int scopedepth)
 {
 	tracePrint("Starting CONSTANT\n");
 	
+	char buffer[30];
+
+	/* Move constant to a register */
+	switch (root->data_type.base_type) {
+	
+	case STRING_TYPE:
+		/* load the string into registers */
+
+		sprintf(buffer, "..STRING%i", root->string_index);
+		instruction_add(MOVE32, STRDUP(buffer), r0, 0, 0);
+		break;
+	case BOOL_TYPE:
+		sprintf(buffer, "#%i", root->bool_const);
+		instruction_add(MOVE32, STRDUP(buffer), r0, 0, 0);
+	case INT_TYPE:
+		sprintf(buffer, "#%i", root->int_const);
+		instruction_add(MOVE32, STRDUP(buffer), r0, 0, 0);
+
+	}
+
+	/* push contents of r0 to stack */
+	instruction_add(PUSH, r0, NULL, 0, 0);
 
 
 	tracePrint("End CONSTANT\n");
 }
 
-void gen_ASSIGNMENT_STATEMENT ( node_t *root, int scopedepth )
-{
+/*
+ * Generater Assignment Statement
+ * TODO
+ */
+void
+gen_ASSIGNMENT_STATEMENT(node_t *root, int scopedepth)
+{	
+	tracePrint ( "Starting ASSIGNMENT_STATEMENT\n");
 	
-	 tracePrint ( "Starting ASSIGNMENT_STATEMENT\n");
-
-
+	/*right hand side */
+	root->children[1]->generate(root->children[1], scopedepth);
 	
+	/* we can always expect the result of an expression to be at register 0 */
+	//instruction_add(POP, r0, NULL, 0, 0);
+	instruction_add(STORE, r0, fp, 0, root->children[0]->entry->stack_offset);
 	
 
 	tracePrint ( "End ASSIGNMENT_STATEMENT\n");
 }
 
-void gen_RETURN_STATEMENT ( node_t *root, int scopedepth )
+/*
+ * Generate Return Statement
+ * TODO
+ */
+void
+gen_RETURN_STATEMENT ( node_t *root, int scopedepth )
 {
 	
 	tracePrint ( "Starting RETURN_STATEMENT\n");
 	
+	root->children[0]->generate(root->children[0], scopedepth);
+	instruction_add(POP, r0, NULL, 0, 0);
 	
 	tracePrint ( "End RETURN_STATEMENT\n");
 }
-
-
 
 
 
