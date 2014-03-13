@@ -5,7 +5,7 @@ mkdir -p test_file_stage.d;
 ./bin/vslc -s 12 < vsl_programs/$1.vsl 2> test_file_stage.d/$1.s
 
 echo "-- ASSEMBLY --"
-cat test_file_stage.d/$1.s
+cat -n test_file_stage.d/$1.s
 
 arm-linux-gnueabi-gcc -static test_file_stage.d/$1.s -o test_file_stage.d/$1.exe 2> test_file_stage.d/$1.asmError;
 
