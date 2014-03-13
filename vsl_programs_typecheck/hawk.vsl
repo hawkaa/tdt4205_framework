@@ -1,0 +1,27 @@
+CLASS Klasse
+HAS
+	INT i;
+	FLOAT j;
+WITH
+	VOID FUNC show (INT a, INT b)
+	START
+		PRINT "HELLO WORLD";
+	END
+END
+VOID FUNC test ()
+START
+	INT a;
+	FLOAT b;
+	Klasse k;
+	k.i := 5;
+	k.j := 5.0;
+	Klasse c;
+	c := k;
+	a := 1;
+	b := 2.0;
+END
+
+INT FUNC add (INT a, INT b)
+START
+	RETURN a + b;
+END

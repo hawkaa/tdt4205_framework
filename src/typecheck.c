@@ -13,8 +13,30 @@ data_type_t te(node_t* root);
 data_type_t tv(node_t* root);
 
 /*
+ * Checks if two data types are equal. If the types are of type class,
+ * class names are checked
+ */
+static int
+equal_types(data_type_t a, data_type_t b)
+{	
+	/* compare base types */
+	if (a.base_type != b.base_type)
+		return 0;
+
+	/* compare class names */
+	if (a.base_type == CLASS_TYPE) {
+		if (strcmp(a.class_name, b.class_name)) {
+			return 0;
+		}
+	}
+
+	/* comparison check ok, return true */
+	return 1;
+}
+
+/*
  * Type error
- * Will effectively halt the program
+ * Will effectively halt the program.
  */
 void
 type_error(node_t* root) {
@@ -29,40 +51,40 @@ type_error(node_t* root) {
 	exit(-1);
 }
 
-static int
-equal_types(data_type_t a, data_type_t b)
-{	
-	//fprintf(stderr, "%i %i\n", a.base_type, b.base_type);
-	//return a.base_type == b.base_type;
-	if (a.base_type != b.base_type)
-		return 0;
-	
-	if (a.base_type == CLASS_TYPE)
-		if (!strcmp(a.class_name, b.class_name))
-			return 0;
-	return 1;
-}
-
-data_type_t typecheck_default(node_t* root)
+/*
+ * Typecheck default
+ * Function already implemented.
+ */
+data_type_t
+typecheck_default(node_t* root)
 {
 	return td(root);
 }
 
-data_type_t typecheck_expression(node_t* root)
+/*
+ * Typecheck expression
+ * Additional code for class field access, function and method calls added.
+ */
+data_type_t
+typecheck_expression(node_t* root)
 {
 	data_type_t toReturn;
+	data_type_t actual_param, formal_param;
+	node_t *params;
 
+	/* debug output for stage 10 */
 	if(outputStage == 10)
 		fprintf( stderr, "Type checking expression %s\n", root->expression_type.text);
 
+	/* fetching from the predefined function */
 	toReturn = te(root);
 
-	data_type_t actual_param, formal_param;
-	node_t *params;
 	//Insert additional checking here
 	switch (root->expression_type.index) {
 	case FUNC_CALL_E:
 	case METH_CALL_E:
+		/* parameters have different locations on method and function
+		 calls */
 		if (root->expression_type.index == FUNC_CALL_E)
 			params = root->children[1];
 		else
@@ -85,16 +107,22 @@ data_type_t typecheck_expression(node_t* root)
 		return root->function_entry->return_type;
 	
 	case CLASS_FIELD_E:
+		/* will only return the type of the class field */
 		return root->children[1]->entry->type;
 	}
 
-	
-
+	/* return "default" value if none of above applies */
 	return toReturn;	
 	
 }
 
-data_type_t typecheck_variable(node_t* root){
+/*
+ * Typecheck variable
+ * Function already implemented
+ */
+data_type_t
+typecheck_variable(node_t* root)
+{
 	return tv(root);
 }
 
@@ -106,12 +134,16 @@ data_type_t
 typecheck_assignment(node_t* root)
 {
 	data_type_t lhs, rhs;
+
+	/* get left and right hand side types */
 	lhs = root->children[0]->typecheck(root->children[0]);
 	rhs = root->children[1]->typecheck(root->children[1]);
 
+	/* compare types */
 	if (!equal_types(lhs, rhs))
 		type_error(root);
 	
+	/* they are equal, so just return one of them */
 	return lhs;
 
 }
