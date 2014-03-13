@@ -346,6 +346,7 @@ gen_CONSTANT(node_t *root, int scopedepth)
 	case INT_TYPE:
 		sprintf(buffer, "#%i", root->int_const);
 		instruction_add(MOVE32, STRDUP(buffer), r0, 0, 0);
+		
 
 	}
 
