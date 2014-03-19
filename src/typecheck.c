@@ -74,12 +74,13 @@ typecheck_expression(node_t* root)
 
 	/* debug output for stage 10 */
 	if(outputStage == 10)
-		fprintf( stderr, "Type checking expression %s\n", root->expression_type.text);
+		fprintf( stderr, "Type checking expression %s\n",
+			root->expression_type.text);
 
 	/* fetching from the predefined function */
 	toReturn = te(root);
 
-	//Insert additional checking here
+	/* additional typechecking */
 	switch (root->expression_type.index) {
 	case FUNC_CALL_E:
 	case METH_CALL_E:
@@ -97,18 +98,27 @@ typecheck_expression(node_t* root)
 
 			/* iterate over children */
 			for (int i = 0; i < params->n_children; ++i) {
-				actual_param = params->children[i]->typecheck(params->children[i]);
+				actual_param = params->children[i]->data_type;
 				formal_param = root->function_entry->argument_types[i];
 				if (!equal_types(actual_param, formal_param)) {
 					type_error(root);
 				}
 			}
+		} else {
+			/* number of arguments should also be 0 in the
+			 definition */
+			if (root->function_entry->nArguments != 0) {
+				type_error(root);
+			}
 		}
-		return root->function_entry->return_type;
+		/* save data type to expression */
+		root->data_type = root->function_entry->return_type;
+		return root->data_type;
 	
 	case CLASS_FIELD_E:
 		/* will only return the type of the class field */
-		return root->children[1]->entry->type;
+		root->data_type = root->children[1]->entry->type;
+		return root->data_type;;
 	}
 
 	/* return "default" value if none of above applies */
@@ -144,6 +154,7 @@ typecheck_assignment(node_t* root)
 		type_error(root);
 	
 	/* they are equal, so just return one of them */
+	root->data_type = lhs;
 	return lhs;
 
 }
